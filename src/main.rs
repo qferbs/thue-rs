@@ -61,8 +61,6 @@ impl Rule for Input {
 
     fn substitution(&self) -> Cow<str> {
         let mut out = String::new();
-        // TODO: handle this better
-        // TODO: decide whether or not to trim a possible newline character
         stdin().read_line(&mut out).unwrap();
         out = out[..out.len() - 1].to_string();
         Cow::Owned(out)
@@ -91,14 +89,13 @@ impl Rule for Output {
     }
 
     fn substitution(&self) -> Cow<str> {
-        // TODO: handle this better
         stdout().lock().write_all(&self.output.as_bytes()).unwrap();
         Cow::Owned("".to_string())
     }
 }
 
 fn main() -> Result<(), std::io::Error> {
-    let file_name = env::args().nth(1).unwrap();
+    let file_name = env::args().nth(1).expect("Missing program file argument!");
     let file = File::open(file_name)?;
     let mut buf_reader = BufReader::new(file);
 
