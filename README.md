@@ -1,4 +1,6 @@
 # thue-rs
+[![crates.io](https://img.shields.io/crates/v/thue-rs.svg)](https://crates.io/crates/thue-rs)
+
 A [Thue](https://esolangs.org/wiki/Thue) interpreter written in Rust. To run your Thue programs, simply provide the file as an argument:
 ```
 thue-rs hello-world.t
