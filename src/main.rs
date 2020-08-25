@@ -175,4 +175,5 @@ fn run_program(mut rule_list: Box<[Box<dyn Rule>]>, initial_state: String) {
             }
         }
     }
+    print!("\n");
 }
