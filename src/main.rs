@@ -3,6 +3,9 @@ use std::env;
 use std::fs::File;
 use std::io::{stdin, stdout, BufRead, BufReader, Read, Write};
 
+use rand::seq::SliceRandom;
+use rand::thread_rng;
+
 trait Rule {
     // returns the original string to replace
     fn original(&self) -> Cow<str>;
@@ -61,6 +64,7 @@ impl Rule for Input {
         // TODO: handle this better
         // TODO: decide whether or not to trim a possible newline character
         stdin().read_line(&mut out).unwrap();
+        out = out[..out.len() - 1].to_string();
         Cow::Owned(out)
     }
 }
@@ -104,11 +108,7 @@ fn main() -> Result<(), std::io::Error> {
     buf_reader.read_to_string(&mut initial_state)?;
     initial_state = initial_state.replace("\n", "");
 
-    for rule in rule_list.iter() {
-        println!("{:?}::={:?}", rule.original(), rule.substitution());
-    }
-
-    println!("{:?}", initial_state);
+    run_program(rule_list, initial_state);
 
     Ok(())
 }
@@ -124,7 +124,7 @@ fn parse_rules(buf_reader: &mut BufReader<File>) -> Result<Box<[Box<dyn Rule>]>,
         next_line = next_line[..next_line.len() - 1].to_string();
 
         if let Some((original, substitute)) = get_rule_params(&next_line) {
-            if original == "" && substitute == "" {
+            if original.trim() == "" && substitute.trim() == "" {
                 // reached end of rule list
                 break;
             } else if substitute == ":::" {
@@ -149,17 +149,30 @@ fn get_rule_params(line: &str) -> Option<(&str, &str)> {
     }
 }
 
-/*
-planning:
-    overview:
-        - read replacement lists
-        - read initial state
-        - start execution loop
+// runs Thue program using collected 'rule_list' and 'initial_state'
+fn run_program(mut rule_list: Box<[Box<dyn Rule>]>, initial_state: String) {
+    let mut rng = thread_rng();
+    let mut state = initial_state;
 
-    execution loop:
-        1 pick replacement rule at random (that hasn't been picked)
-        2 find valid substrings to replace
-            if > 1, pick one at random
-            else go to 1
+    let mut running = true;
 
-*/
+    while running {
+        rule_list.shuffle(&mut rng);
+
+        running = false;
+        for rule in rule_list.iter() {
+            let original = rule.original();
+
+            if let Some(index) = state
+                .match_indices(original.as_ref())
+                .map(|(i, _)| i)
+                .collect::<Vec<usize>>()
+                .choose(&mut rng)
+            {
+                running = true;
+                state.replace_range(*index..index + original.len(), &rule.substitution());
+                break;
+            }
+        }
+    }
+}
