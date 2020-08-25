@@ -76,6 +76,11 @@ struct Output {
 
 impl Output {
     fn new(original: &str, output: &str) -> Self {
+        let mut output = output;
+        if output == "" {
+            output = "\n";
+        }
+
         Output {
             original: original.to_string().into_boxed_str(),
             output: output.to_string().into_boxed_str(),
@@ -124,6 +129,8 @@ fn parse_rules(buf_reader: &mut BufReader<File>) -> Result<Box<[Box<dyn Rule>]>,
             if original.trim() == "" && substitute.trim() == "" {
                 // reached end of rule list
                 break;
+            } else if original.trim() == "" && substitute.trim() != "" {
+                panic!("Invalid syntax!");
             } else if substitute == ":::" {
                 out.push(Box::new(Input::new(original)));
             } else if substitute.starts_with('~') {
