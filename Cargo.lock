@@ -71,7 +71,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "thue-compiler"
+name = "thue-rs"
 version = "0.1.0"
 dependencies = [
  "rand",

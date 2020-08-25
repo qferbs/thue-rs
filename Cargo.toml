@@ -1,8 +1,13 @@
 [package]
-name = "thue-compiler"
+name = "thue-rs"
 version = "0.1.0"
-authors = ["Quinn Ferbers"]
+authors = ["qferbs <Quinn Ferbers>"]
 edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "A Thue interpreter written in Rust."
+repository = "https://github.com/qferbs/thue-rs"
+keywords = ["Thue", "esoteric", "interpreter"]
+readme = "README.md"
 
 [dependencies]
 rand = "0.7.3"
